@@ -1,6 +1,6 @@
 package enums;
 
-public enum Direction {
+public enum MoveDirection {
     FORWARD,
     BACKWARD,
     RIGHT,

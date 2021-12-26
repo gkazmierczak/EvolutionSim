@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="MapTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2021-12-23T22:31:11" hostname="PC-K4" time="0.02">
+  <properties/>
+  <testcase name="BoundedMapPositionChangeTest()" classname="MapTest" time="0.02"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

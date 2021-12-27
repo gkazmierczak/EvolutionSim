@@ -16,6 +16,8 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
     public int jungleHeight;
     private int grassCount=0;
     private int animalCount=0;
+    public int jungleEmptyFieldCount;
+    public int steppeEmptyFieldCount;
     private long epoque=0;
     private final Random random = new Random();
     private final Map<Vector2D, List<IMapElement>> map = new HashMap<>();
@@ -35,12 +37,30 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
             allAnimalsList.add((Animal) element);
             animalCount+=1;
         }
+
     }
 
     private void addToMap(IMapElement element, Vector2D position) {
         if (this.map.get(position) != null) {
             this.map.get(position).add(element);
+            if(inJungle(position)){
+                if(map.get(position).size()==1){
+                    System.out.println(jungleEmptyFieldCount + " " + map.get(position).size());
+                    jungleEmptyFieldCount-=1;
+                }
+            }
+            else{
+                if(map.get(position).size()==1){
+                    steppeEmptyFieldCount-=1;
+                }
+            }
         } else {
+            if(inJungle(position)){
+                jungleEmptyFieldCount-=1;
+            }
+            else{
+                steppeEmptyFieldCount-=1;
+            }
             ArrayList<IMapElement> arrayList = new ArrayList<>();
             arrayList.add(element);
             this.map.put(position, arrayList);
@@ -62,11 +82,44 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
 
 
     public boolean isOccupied(Vector2D position) {
-        return !this.map.get(position).isEmpty();
+        return !(this.map.get(position)==null || this.map.get(position).isEmpty());
+    }
+
+    public boolean inJungle(Vector2D position){
+        return (position.x>=(width-jungleWidth)/2 && position.x<(width-jungleWidth)/2+jungleWidth && position.y>=(height-jungleHeight)/2 && position.y<(height-jungleHeight)/2+jungleHeight );
     }
 
     public void positionChanged(Vector2D oldPosition, Vector2D newPosition, Animal animal) {
         this.map.get(oldPosition).remove(animal);
+        if (inJungle(oldPosition)) {
+            if (this.map.get(oldPosition).size() == 0) {
+                this.jungleEmptyFieldCount += 1;
+            }
+        }
+        else{
+            if (this.map.get(oldPosition).size() == 0) {
+                this.steppeEmptyFieldCount+= 1;
+            }
+        }
+//        if(this.map.get(newPosition)==null){
+//            if(inJungle(newPosition)){
+//                this.jungleEmptyFieldCount-=1;
+//            }
+//            else{
+//                this.steppeEmptyFieldCount-=1;
+//            }
+//        }
+//        else {
+//            if (inJungle(newPosition)) {
+//                if (this.map.get(newPosition).size() == 0) {
+//                    this.jungleEmptyFieldCount -= 1;
+//                }
+//            } else {
+//                if (this.map.get(newPosition).size() == 0) {
+//                    this.steppeEmptyFieldCount -= 1;
+//                }
+//            }
+//        }
         addToMap(animal, newPosition);
 
     }
@@ -83,6 +136,14 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
             if (!animal.isAlive()) {
                 animal.setDeathEpoque(epoque);
                 this.map.get(animal.getPosition()).remove(animal);
+                if(this.map.get(animal.getPosition()).size()==0){
+                    if(inJungle(animal.getPosition())){
+                        jungleEmptyFieldCount+=1;
+                    }
+                    else{
+                        steppeEmptyFieldCount+=1;
+                    }
+                }
                 animalCount-=1;
                 iterator.remove();
             }
@@ -90,6 +151,9 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
     }
 
     private void spawnGrassInSteppe(int grassEnergy) {
+        if(steppeEmptyFieldCount<=0){
+            return;
+        }
         int x = random.nextInt(width);
         int y = random.nextInt(height);
         Vector2D grassPosition = new Vector2D(x, y);
@@ -104,22 +168,50 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
     }
 
     private void spawnGrassInJungle(int grassEnergy) {
-        int x = random.nextInt(jungleWidth) + (width - jungleWidth) / 2;
-        int y = random.nextInt(jungleHeight) + (height - jungleHeight) / 2;
-        Vector2D grassPosition = new Vector2D(x, y);
-        while (isOccupied(grassPosition)) {
-            x = random.nextInt(jungleWidth) + (width - jungleWidth) / 2;
-            y = random.nextInt(jungleHeight) + (height - jungleHeight) / 2;
-            grassPosition = new Vector2D(x, y);
+        if(jungleEmptyFieldCount<=0){
+            return;
         }
-        Grass grass = new Grass(grassPosition, grassEnergy);
-        place(grass, grassPosition);
-        grassCount += 1;
+        if(jungleEmptyFieldCount>5) {
+            int x = random.nextInt(jungleWidth) + (width - jungleWidth) / 2;
+            int y = random.nextInt(jungleHeight) + (height - jungleHeight) / 2;
+            Vector2D grassPosition = new Vector2D(x, y);
+            while (isOccupied(grassPosition)) {
+                x = random.nextInt(jungleWidth) + (width - jungleWidth) / 2;
+                y = random.nextInt(jungleHeight) + (height - jungleHeight) / 2;
+                grassPosition = new Vector2D(x, y);
+            }
+            Grass grass = new Grass(grassPosition, grassEnergy);
+            place(grass, grassPosition);
+            grassCount += 1;
+//            jungleEmptyFieldCount -= 1;
+        }
+        else{
+            for (int i = (width - jungleWidth) / 2; i < (jungleWidth) + (width - jungleWidth) / 2; i++) {
+                for (int j = (height - jungleHeight) / 2; j < (jungleHeight) + (height - jungleHeight) / 2; j++) {
+                    if(!isOccupied(new Vector2D(i,j))){
+                        Vector2D grassPosition = new Vector2D(i, j);
+                        Grass grass = new Grass(grassPosition, grassEnergy);
+                        place(grass, grassPosition);
+                        grassCount += 1;
+//                        jungleEmptyFieldCount -= 1;
+                        return;
+                    }
+                }
+
+            }
+        }
+    }
+    public int getAnimalCount(){
+        return this.animalCount;
     }
 
-    public void spawnGrass(int grassEnergy) {
-        spawnGrassInSteppe(grassEnergy);
-        spawnGrassInJungle(grassEnergy);
+    public boolean spawnGrass(int grassEnergy) {
+        if(steppeEmptyFieldCount>0 || jungleEmptyFieldCount>0) {
+            spawnGrassInSteppe(grassEnergy);
+            spawnGrassInJungle(grassEnergy);
+            return true;
+        }
+        return false;
     }
 
     public void moveAnimals() {
@@ -137,6 +229,7 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
             if(grass!=null && !grassToEat.contains(grass)) {
                 grassToEat.add(grass);
             }
+
 
         }
     }
@@ -252,6 +345,11 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
     public long getEpoque() {
         return epoque;
     }
+    public void printAnimals(){
+        for (Animal animal:livingAnimalsList) {
+            System.out.println(animal.toString()+" "+animal.getPosition().toString()+" "+animal.orient + " "+animal.energy);
+        }
+    }
 
     public double getAverageEnergy(){
         double totalEnergy=0;
@@ -259,6 +357,40 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
             totalEnergy+=animal.energy;
         }
         return (double) Math.round(totalEnergy*10/ livingAnimalsList.size())/10;
+    }
+    public IMapElement topObjectAt(Vector2D position){
+        List<IMapElement> mapElements=map.get(position);
+        if(mapElements==null || mapElements.size()==0){
+            return null;
+        }
+        else if (mapElements.size()==1){
+            return mapElements.get(0);
+        }
+        else{
+            IMapElement topObject=null;
+            int maxEnergy=0;
+            for(IMapElement mapElement:mapElements){
+                if(mapElement instanceof Animal animal && animal.energy>maxEnergy){
+                    topObject=animal;
+                    maxEnergy=animal.energy;
+                }
+            }
+            return topObject;
+        }
+    }
+    public void spawnAnimals(int spawnedAnimalsCount, int baseEnergy, int energyCost){
+        for (int i = 0; i < spawnedAnimalsCount ; i++) {
+            int x = random.nextInt(width);
+            int y = random.nextInt(height);
+            Vector2D spawnPosition = new Vector2D(x, y);
+            while (isOccupied(spawnPosition)){
+                x = random.nextInt(width);
+                y = random.nextInt(height);
+                spawnPosition = new Vector2D(x, y);
+            }
+            Animal animal=new Animal(spawnPosition,this,baseEnergy,energyCost);
+            place(animal,spawnPosition);
+        }
     }
 
     public GenericWorldMap(int width, int height, double jungleRatio) {
@@ -274,6 +406,11 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
             this.jungleWidth = (int) (Math.round(jungleRatio * width / parts));
             this.jungleHeight = (int) (Math.round(jungleRatio * height / parts));
         }
+        this.jungleEmptyFieldCount=this.jungleHeight*this.jungleWidth;
+        this.steppeEmptyFieldCount=width*height-jungleEmptyFieldCount;
+        System.out.println(jungleEmptyFieldCount);
+        System.out.println(steppeEmptyFieldCount);
 
     }
+
 }

@@ -1,7 +1,9 @@
 package classes;
 
 import enums.*;
+import gui.AnimalView;
 import interfaces.*;
+import javafx.scene.Parent;
 
 import java.util.ArrayList;
 
@@ -21,6 +23,7 @@ public class Animal implements IMapElement {
     private int trackedChildrenCount;
     private int trackedDescendantCount;
     private final ArrayList<IPositionObserver> observers = new ArrayList<>();
+    AnimalView view;
 
     public Vector2D getPosition() {
         return this.position;
@@ -34,6 +37,7 @@ public class Animal implements IMapElement {
         this.addObserver((IPositionObserver) map);
         this.genes = new Genes(32, 8);
         this.dailyEnergyCost = dailyEnergyCost;
+        this.view=new AnimalView(this);
     }
 
     public Animal(Vector2D initialPosition, IWorldMap map, int initialEnergy, int dailyEnergyCost, Animal parent1, Animal parent2) {
@@ -49,10 +53,12 @@ public class Animal implements IMapElement {
             this.genes = new Genes(parent2.getGenes(), parent1.getGenes(), (float) parent2.energy / (parent1.energy + parent2.energy));
         }
         this.birthEpoque=map.getEpoque();
+        this.view=new AnimalView(this);
     }
     public void move(){
         this.age+=1;
         int move=genes.getMove();
+//        System.out.println(move);
         if(move==0){
             this.moveForward();
         }
@@ -60,7 +66,10 @@ public class Animal implements IMapElement {
             this.moveBackward();
         }
         else{
-            this.orient.rotate(move);
+//            System.out.println(orient);
+            this.orient=this.orient.rotate(move);
+            this.decreaseEnergy(dailyEnergyCost);
+//            System.out.println(orient);
         }
     }
     public void startTracking(){
@@ -94,6 +103,7 @@ public class Animal implements IMapElement {
         if (this.map.canMoveTo(newPos)) {
             this.setPosition(newPos);
             this.decreaseEnergy(dailyEnergyCost);
+
         }
     }
 
@@ -114,6 +124,9 @@ public class Animal implements IMapElement {
     }
     public void setDeathEpoque(long epoque){
         deathEpoque=epoque;
+    }
+    public Parent getView(){
+        return this.view.vBox;
     }
     public int getChildrenCount(){
         return this.childrenCount;
@@ -147,7 +160,9 @@ public class Animal implements IMapElement {
     public void increaseEnergy(int amount) {
         energy += amount;
     }
-
+    public void updateView(){
+        this.view.updatePosition();
+    }
     public void decreaseEnergy(int amount) {
         energy -= amount;
     }

@@ -145,13 +145,13 @@ public class MapStatBox {
         this.avgChildrenCounts.getData().add(new XYChart.Data<>(map.getEpoch(), map.getAverageChildrenCount()));
         this.epochLabel.setText("EPOCH: " + map.getEpoch());
         int[] genotype = map.getDominantGenotype();
+        this.simulationData.add(new String[]{String.valueOf(map.getAnimalCount()), String.valueOf(map.getGrassCount()), String.valueOf(map.getAverageEnergy()), String.valueOf(map.getAverageDeadAnimalLifespan()), String.valueOf(map.getAverageChildrenCount())});
         if (genotype != null) {
             String result = Arrays.stream(genotype).mapToObj(String::valueOf).collect(Collectors.joining(""));
             this.dominantGenotypeLabel.setText("Dominant genotype: " + result);
-            this.simulationData.add(new String[]{String.valueOf(map.getAnimalCount()), String.valueOf(map.getGrassCount()), String.valueOf(map.getAverageEnergy()), String.valueOf(map.getAverageDeadAnimalLifespan()), String.valueOf(map.getAverageChildrenCount()), result});
+
         } else {
             this.dominantGenotypeLabel.setText("");
-            this.simulationData.add(new String[]{String.valueOf(map.getAnimalCount()), String.valueOf(map.getGrassCount()), String.valueOf(map.getAverageEnergy()), String.valueOf(map.getAverageDeadAnimalLifespan()), String.valueOf(map.getAverageChildrenCount()), null});
         }
     }
 

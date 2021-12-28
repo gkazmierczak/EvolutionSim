@@ -211,7 +211,6 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
         grassToEat.clear();
         reproductionLocationSet.clear();
         for (Animal animal : livingAnimalsList) {
-//            System.out.println(animal.getPosition());
             if (objectsAt(animal.getPosition()).size() <= 2) {
                 reproductionLocationSet.remove(animal.getPosition());
             }

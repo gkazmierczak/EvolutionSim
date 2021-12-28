@@ -80,7 +80,7 @@ public class Animal implements IMapElement {
     public void move(MoveDirection direction) {
         this.age += 1;
         switch (direction) {
-            case LEFT -> this.orient = this.orient.rotate(-2);
+            case LEFT -> this.orient = this.orient.rotate(6);
             case RIGHT -> this.orient = this.orient.rotate(2);
             case FORWARD -> this.moveForward();
             case BACKWARD -> this.moveBackward();
@@ -210,8 +210,15 @@ public class Animal implements IMapElement {
             trackedAncestor.trackedDescendantCount += 1;
             child.trackedAncestor = trackedAncestor;
         }
-
         return child;
+    }
+    public Animal(Vector2D initialPosition, MapDirection orient){
+        this.position=initialPosition;
+        this.orient=orient;
+        this.map=null;
+        this.genes=new Genes(32,8);
+        this.dailyEnergyCost=0;
+        this.energy=100;
     }
 
 

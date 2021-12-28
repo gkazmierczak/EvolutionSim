@@ -3,6 +3,7 @@ import classes.Vector2D;
 import enums.MapDirection;
 import enums.MoveDirection;
 import evo.BoundedWorldMap;
+import evo.GenericWorldMap;
 import evo.LoopedWorldMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -57,5 +58,23 @@ public class MapTest {
         animal.move(MoveDirection.BACKWARD);
         animal.move(MoveDirection.BACKWARD);
         Assertions.assertEquals(new Vector2D(0, 0), animal.getPosition());
+    }
+
+    @Test
+    public void spawnTests(){
+        GenericWorldMap map=new GenericWorldMap(10,10,0.5);
+        map.spawnAnimals(5,10,1);
+        Assertions.assertEquals(map.getAnimalCount(),5);
+        map.spawnGrass(10);
+        Assertions.assertEquals(map.getGrassCount(),2);
+    }
+
+    @Test
+    public void positionTests(){
+        GenericWorldMap map=new GenericWorldMap(10,10,0.5);
+        Assertions.assertTrue(map.inJungle(new Vector2D(5,5)));
+        Assertions.assertFalse(map.inJungle(new Vector2D(6,8)));
+        Assertions.assertTrue(map.isInBounds(new Vector2D(3,8)));
+        Assertions.assertFalse(map.isInBounds(new Vector2D(20,61)));
     }
 }

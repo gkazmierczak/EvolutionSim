@@ -1,6 +1,6 @@
 package gui;
 
-import evo.GenericWorldMap;
+import classes.Grass;
 import interfaces.IButtonPressHandler;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class MapStatBox {
     GridPane grid;
-    private final GenericWorldMap map;
+    private final Grass.GenericWorldMap map;
     private final Label epochLabel;
     private final Label dominantGenotypeLabel;
     private final LineChart<Number, Number> entityCountChart;
@@ -38,7 +38,7 @@ public class MapStatBox {
     private final XYChart.Series<Number, Number> avgEnergyLevels = new XYChart.Series<>();
     private final List<String[]> simulationData = new LinkedList<>();
 
-    public MapStatBox(GenericWorldMap map, IButtonPressHandler handler) {
+    public MapStatBox(Grass.GenericWorldMap map, IButtonPressHandler handler) {
         this.map = map;
         this.grid = new GridPane();
         final NumberAxis xAxis = new NumberAxis();

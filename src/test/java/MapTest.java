@@ -1,10 +1,9 @@
 import classes.Animal;
+import classes.Grass;
+import classes.SimulationParams;
 import classes.Vector2D;
 import enums.MapDirection;
 import enums.MoveDirection;
-import evo.BoundedWorldMap;
-import evo.GenericWorldMap;
-import evo.LoopedWorldMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +12,7 @@ public class MapTest {
     public void LoopedMapPositionChangeTest() {
 //      Test position looping on LoopedWorldMap
 //      Place animals on map and move them
-        LoopedWorldMap loopedWorldMap = new LoopedWorldMap(10, 10, 0.5);
+        SimulationParams.LoopedWorldMap loopedWorldMap = new SimulationParams.LoopedWorldMap(10, 10, 0.5);
         Animal animal = new Animal(new Vector2D(0, 0), loopedWorldMap, 999, 1);
         animal.setOrient(MapDirection.NORTH);
         loopedWorldMap.place(animal, animal.getPosition());
@@ -42,7 +41,7 @@ public class MapTest {
     public void BoundedMapPositionChangeTest() {
 //      Test position changes on BoundedWorldMap
 //      Place animals on map and move them
-        BoundedWorldMap boundedWorldMap = new BoundedWorldMap(10, 10, 0.5);
+        SimulationParams.BoundedWorldMap boundedWorldMap = new SimulationParams.BoundedWorldMap(10, 10, 0.5);
         Animal animal = new Animal(new Vector2D(0, 0), boundedWorldMap, 999, 1);
         animal.setOrient(MapDirection.NORTH);
         boundedWorldMap.place(animal, animal.getPosition());
@@ -62,7 +61,7 @@ public class MapTest {
 
     @Test
     public void spawnTests(){
-        GenericWorldMap map=new GenericWorldMap(10,10,0.5);
+        Grass.GenericWorldMap map=new Grass.GenericWorldMap(10,10,0.5);
         map.spawnAnimals(5,10,1);
         Assertions.assertEquals(map.getAnimalCount(),5);
         map.spawnGrass(10);
@@ -71,7 +70,7 @@ public class MapTest {
 
     @Test
     public void positionTests(){
-        GenericWorldMap map=new GenericWorldMap(10,10,0.5);
+        Grass.GenericWorldMap map=new Grass.GenericWorldMap(10,10,0.5);
         Assertions.assertTrue(map.inJungle(new Vector2D(5,5)));
         Assertions.assertFalse(map.inJungle(new Vector2D(6,8)));
         Assertions.assertTrue(map.isInBounds(new Vector2D(3,8)));

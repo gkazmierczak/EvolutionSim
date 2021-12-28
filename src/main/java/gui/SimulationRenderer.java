@@ -1,8 +1,7 @@
 package gui;
 
+import classes.SimulationParams;
 import enums.MapType;
-import evo.BoundedWorldMap;
-import evo.LoopedWorldMap;
 import evo.SimulationEngine;
 import interfaces.IButtonPressHandler;
 import javafx.geometry.Pos;
@@ -15,14 +14,14 @@ import javafx.stage.Stage;
 public class SimulationRenderer {
     private MapRenderer loopedMapRenderer;
     private MapRenderer boundedMapRenderer;
-    private final LoopedWorldMap loopedWorldMap;
-    private final BoundedWorldMap boundedWorldMap;
+    private final SimulationParams.LoopedWorldMap loopedWorldMap;
+    private final SimulationParams.BoundedWorldMap boundedWorldMap;
     private OutputLog outputLog;
     private final Stage primaryStage;
     private Button saveBtn;
     private Button highlightBtn;
     private final IButtonPressHandler handler;
-    public SimulationRenderer(Stage primaryStage, LoopedWorldMap loopedWorldMap, BoundedWorldMap boundedWorldMap, IButtonPressHandler handler){
+    public SimulationRenderer(Stage primaryStage, SimulationParams.LoopedWorldMap loopedWorldMap, SimulationParams.BoundedWorldMap boundedWorldMap, IButtonPressHandler handler){
         this.primaryStage=primaryStage;
         this.loopedWorldMap=loopedWorldMap;
         this.boundedWorldMap=boundedWorldMap;

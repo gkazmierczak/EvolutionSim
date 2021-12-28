@@ -3,7 +3,6 @@ package gui;
 import classes.Animal;
 import classes.Grass;
 import classes.Vector2D;
-import evo.GenericWorldMap;
 import interfaces.IButtonPressHandler;
 import interfaces.IMapElement;
 import javafx.geometry.HPos;
@@ -19,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MapRenderer {
-    GenericWorldMap map;
+    Grass.GenericWorldMap map;
     int width;
     int height;
     VBox vBox;
@@ -32,7 +31,7 @@ public class MapRenderer {
     int[] highlightedGenotype;
 
 
-    public MapRenderer(GenericWorldMap map, IButtonPressHandler handler) {
+    public MapRenderer(Grass.GenericWorldMap map, IButtonPressHandler handler) {
         this.map = map;
         this.width = map.width;
         this.height = map.height;

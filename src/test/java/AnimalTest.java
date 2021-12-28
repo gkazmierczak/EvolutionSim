@@ -1,8 +1,8 @@
 import classes.Animal;
+import classes.Grass;
 import classes.Vector2D;
 import enums.MapDirection;
 import enums.MoveDirection;
-import evo.GenericWorldMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ public class AnimalTest {
 
     @Test
     public void procreateTest(){
-        GenericWorldMap map=new GenericWorldMap(10,10,0.5);
+        Grass.GenericWorldMap map=new Grass.GenericWorldMap(10,10,0.5);
         Animal animal1=new Animal(new Vector2D(0,0),map,100,5);
         Animal animal2=new Animal(new Vector2D(0,0),map,100,5);
         Animal child1 =animal1.procreate(animal2);

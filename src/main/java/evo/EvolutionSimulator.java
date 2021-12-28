@@ -22,10 +22,10 @@ public class EvolutionSimulator extends Application implements IButtonPressHandl
     Stage primaryStage;
     SimulationParams simulationParams;
     SimulationParamMenu simulationParamMenu = new SimulationParamMenu(this);
-    LoopedWorldMap loopedWorldMap;
+    SimulationParams.LoopedWorldMap loopedWorldMap;
     SimulationEngine loopedWorldSimulationEngine;
     SimulationRenderer renderer;
-    BoundedWorldMap boundedWorldMap;
+    SimulationParams.BoundedWorldMap boundedWorldMap;
     Thread loopedWorldSimulationThread;
     private SimulationEngine boundedWorldSimulationEngine;
     private Thread boundedWorldSimulationThread;
@@ -53,8 +53,8 @@ public class EvolutionSimulator extends Application implements IButtonPressHandl
 
     public void initSimulation() {
         simulationParams = simulationParamMenu.getSimulationParams();
-        this.loopedWorldMap = new LoopedWorldMap(simulationParams.width, simulationParams.height, simulationParams.jungleRatio);
-        this.boundedWorldMap = new BoundedWorldMap(simulationParams.width, simulationParams.height, simulationParams.jungleRatio);
+        this.loopedWorldMap = new SimulationParams.LoopedWorldMap(simulationParams.width, simulationParams.height, simulationParams.jungleRatio);
+        this.boundedWorldMap = new SimulationParams.BoundedWorldMap(simulationParams.width, simulationParams.height, simulationParams.jungleRatio);
         this.renderer = new SimulationRenderer(this.primaryStage, this.loopedWorldMap, this.boundedWorldMap, this);
         this.loopedWorldSimulationEngine = new SimulationEngine(loopedWorldMap, simulationParams);
         this.loopedWorldSimulationEngine.setRenderer();

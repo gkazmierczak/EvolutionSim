@@ -1,11 +1,12 @@
 package evo;
 
 
+import classes.Grass;
 import classes.SimulationParams;
 import enums.MapType;
 
 public class SimulationEngine implements Runnable {
-    private final GenericWorldMap map;
+    private final Grass.GenericWorldMap map;
     private final SimulationParams simulationParams;
     private final int updateDelay;
     private boolean isRunning = false;
@@ -14,7 +15,7 @@ public class SimulationEngine implements Runnable {
     public volatile boolean threadSuspended = false;
     int respawnsRemaining = 3;
 
-    public SimulationEngine(GenericWorldMap map, SimulationParams simulationParams) {
+    public SimulationEngine(Grass.GenericWorldMap map, SimulationParams simulationParams) {
         this.map = map;
         this.simulationParams = simulationParams;
         this.updateDelay = simulationParams.updateStepTime;

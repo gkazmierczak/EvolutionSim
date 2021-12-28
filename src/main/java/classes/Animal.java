@@ -2,7 +2,6 @@ package classes;
 
 import enums.MapDirection;
 import enums.MoveDirection;
-import evo.GenericWorldMap;
 import interfaces.IMapElement;
 import interfaces.IPositionObserver;
 
@@ -12,7 +11,7 @@ public class Animal implements IMapElement {
     public MapDirection orient;
     private Vector2D position;
     public int energy;
-    private final GenericWorldMap map;
+    private final Grass.GenericWorldMap map;
     private final Genes genes;
     private final int dailyEnergyCost;
     private int age = 0;
@@ -29,7 +28,7 @@ public class Animal implements IMapElement {
         return this.position;
     }
 
-    public Animal(Vector2D initialPosition, GenericWorldMap map, int initialEnergy, int dailyEnergyCost) {
+    public Animal(Vector2D initialPosition, Grass.GenericWorldMap map, int initialEnergy, int dailyEnergyCost) {
         this.position = initialPosition;
         this.map = map;
         this.energy = initialEnergy;
@@ -49,7 +48,7 @@ public class Animal implements IMapElement {
         this.dailyEnergyCost = clone.dailyEnergyCost;
     }
 
-    public Animal(Vector2D initialPosition, GenericWorldMap map, int initialEnergy, int dailyEnergyCost, Animal parent1, Animal parent2) {
+    public Animal(Vector2D initialPosition, Grass.GenericWorldMap map, int initialEnergy, int dailyEnergyCost, Animal parent1, Animal parent2) {
         this.position = initialPosition;
         this.map = map;
         this.energy = initialEnergy;

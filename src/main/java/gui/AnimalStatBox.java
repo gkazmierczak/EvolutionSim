@@ -1,7 +1,7 @@
 package gui;
 
 import classes.Animal;
-import evo.GenericWorldMap;
+import classes.Grass;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class AnimalStatBox {
-    private final GenericWorldMap map;
+    private final Grass.GenericWorldMap map;
     private Animal trackedAnimal;
     private final Label genotypeLabel;
     private final Label childrenLabel;
@@ -24,7 +24,7 @@ public class AnimalStatBox {
     private final Image[] images;
     VBox vBox;
 
-    public AnimalStatBox(GenericWorldMap map, Image[] images) {
+    public AnimalStatBox(Grass.GenericWorldMap map, Image[] images) {
         this.map = map;
         this.trackedAnimal = map.getTrackedAnimal();
         birthEpochLabel = new Label();

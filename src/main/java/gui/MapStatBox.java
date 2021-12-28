@@ -16,6 +16,8 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Font;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -34,7 +36,7 @@ public class MapStatBox {
     private XYChart.Series<Number,Number> avgLifespans=new XYChart.Series<>();
     private XYChart.Series<Number,Number> avgChildrenCounts=new XYChart.Series<>();
     private XYChart.Series<Number,Number> avgEnergyLevels=new XYChart.Series<>();
-
+    private List<String[]> simulationData=new LinkedList<>();
     public MapStatBox(GenericWorldMap map, IButtonPressHandler handler){
         this.map=map;
         this.grid=new GridPane();
@@ -156,9 +158,12 @@ public class MapStatBox {
         if(genotype!=null){
             String result = Arrays.stream(genotype).mapToObj(String::valueOf).collect(Collectors.joining(""));
             this.dominantGenotypeLabel.setText("Dominant genotype: "+result);
+            this.simulationData.add(new String[]{String.valueOf(map.getAnimalCount()), String.valueOf(map.getGrassCount()), String.valueOf(map.getAverageEnergy()), String.valueOf(map.getAverageDeadAnimalLifespan()), String.valueOf(map.getAverageChildrenCount()),result});
+
         }
         else{
             this.dominantGenotypeLabel.setText("");
+            this.simulationData.add(new String[]{String.valueOf(map.getAnimalCount()), String.valueOf(map.getGrassCount()), String.valueOf(map.getAverageEnergy()), String.valueOf(map.getAverageDeadAnimalLifespan()), String.valueOf(map.getAverageChildrenCount()),null});
         }
     }
 
@@ -167,6 +172,9 @@ public class MapStatBox {
             case "Start":
 
         }
+    }
+    public List<String[]> getSimulationData(){
+        return this.simulationData;
     }
 }
 

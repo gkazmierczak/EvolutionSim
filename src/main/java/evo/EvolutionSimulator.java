@@ -9,8 +9,13 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
 import java.util.Objects;
 
 public class EvolutionSimulator extends Application implements IButtonPressHandler {
@@ -20,7 +25,6 @@ public class EvolutionSimulator extends Application implements IButtonPressHandl
     LoopedWorldMap loopedWorldMap;
     SimulationEngine loopedWorldSimulationEngine;
     SimulationRenderer renderer;
-    //    MapRenderer loopedWorldRenderer;
     BoundedWorldMap boundedWorldMap;
     Thread loopedWorldSimulationThread;
     private SimulationEngine boundedWorldSimulationEngine;
@@ -34,11 +38,6 @@ public class EvolutionSimulator extends Application implements IButtonPressHandl
         primaryStage.show();
     }
 
-//    public void updateUI() {
-//        Platform.runLater(() -> {
-//            renderer.getNextFrame();
-//        });
-//    }
     public void updateMapRender(MapType mapType){
         Platform.runLater(() -> {
             if(mapType==MapType.BOUNDED){
@@ -54,33 +53,20 @@ public class EvolutionSimulator extends Application implements IButtonPressHandl
 
     public void initSimulation() {
         simulationParams = simulationParamMenu.getSimulationParams();
-        System.out.println("got params");
         this.loopedWorldMap = new LoopedWorldMap(simulationParams.width, simulationParams.height, simulationParams.jungleRatio);
-        System.out.println("got map1");
         this.boundedWorldMap = new BoundedWorldMap(simulationParams.width, simulationParams.height, simulationParams.jungleRatio);
-        System.out.println("got map2");
         this.renderer = new SimulationRenderer(this.primaryStage, this.loopedWorldMap, this.boundedWorldMap, this);
-        System.out.println("got renderer");
         this.loopedWorldSimulationEngine = new SimulationEngine(loopedWorldMap, simulationParams);
         this.loopedWorldSimulationEngine.setRenderer(renderer.getLoopedMapRenderer());
         loopedWorldSimulationEngine.init();
         loopedWorldSimulationEngine.setSimulator(this);
-//        loopedWorldMap.printAnimals();
         loopedWorldSimulationThread = new Thread(loopedWorldSimulationEngine);
         this.boundedWorldSimulationEngine = new SimulationEngine(boundedWorldMap, simulationParams);
         this.boundedWorldSimulationEngine.setRenderer(renderer.getBoundedMapRenderer());
         boundedWorldSimulationEngine.init();
         boundedWorldSimulationEngine.setSimulator(this);
-//        boundedWorldMap.printAnimals();
         boundedWorldSimulationThread = new Thread(boundedWorldSimulationEngine);
-//        boundedWorldSimulationThread.start();
-//        loopedWorldSimulationThread.start();
-//        loopedWorldSimulationEngine.run();
-
-//        System.out.println(this.loopedWorldMap.jungleWidth);
-//        System.out.println(this.loopedWorldMap.jungleHeight);
-//        this.boundedWorldMap=new BoundedWorldMap(simulationParams.width, simulationParams.height,simulationParams.jungleRatio);
-    }
+   }
 
     public void simulationFinished(SimulationEngine engine) {
         renderer.simulationFinished(engine);
@@ -94,6 +80,11 @@ public class EvolutionSimulator extends Application implements IButtonPressHandl
             renderer.printMessageToLog("Starting simulation of LOOPED world.\n");
             this.loopedWorldSimulationThread.start();
         }
+        primaryStage.setOnCloseRequest(e -> {
+            loopedWorldSimulationEngine.interrupt();
+            boundedWorldSimulationEngine.interrupt();
+            Platform.exit();
+        });
     }
 
     public void pauseSimulation(MapType mapType) {
@@ -146,16 +137,58 @@ public class EvolutionSimulator extends Application implements IButtonPressHandl
     public void saveSimulationData(){
         if(loopedWorldSimulationEngine.threadSuspended||boundedWorldSimulationEngine.threadSuspended){
             if(loopedWorldSimulationEngine.threadSuspended){
-
+                List<String[]> simulationData = this.renderer.getLoopedMapRenderer().getSimulationData();
+                saveDataAsCSV(simulationData);
             }
             if(boundedWorldSimulationEngine.threadSuspended){
-
+                List<String[]> simulationData = this.renderer.getBoundedMapRenderer().getSimulationData();
+                saveDataAsCSV(simulationData);
             }
         }
         else{
             this.renderer.printMessageToLog("At least one simulation needs to be paused in order to save data.\n");
         }
     }
+
+    private void saveDataAsCSV(List<String[]> simulationData) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save data");
+        fileChooser.setInitialFileName("simulationData.csv");
+        fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+        Stage stage=new Stage();
+        File file = fileChooser.showSaveDialog(stage);
+        if (file != null) {
+            try {
+                PrintWriter pw = new PrintWriter(file);
+                pw.println("Animal count,Grass count,Average energy,Average lifespan,Avergage children count");
+                simulationData.stream()
+                        .map(this::convertToCSV)
+                        .forEach(pw::println);
+                pw.println(this.convertToCSV(calculateAverages(simulationData)));
+                pw.close();
+                printMessage("Simulation data saved.\n");
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+    }
+    private String[] calculateAverages(List<String[]> data){
+        double[] totals=new double[5];
+        data.forEach((entry)->{
+            for (int i = 0; i < 5; i++) {
+                totals[i]+=Double.parseDouble(entry[i]);
+            }
+        });
+        String[] averages=new String[5];
+        for (int i = 0; i < 5; i++) {
+            averages[i]=String.valueOf(totals[i]/data.size());
+        }
+        return averages;
+    }
+    private String convertToCSV(String[] data) {
+        return String.join(",", data);
+    }
+
     public void highlight(){
         if(loopedWorldSimulationEngine.threadSuspended||boundedWorldSimulationEngine.threadSuspended){
             if(loopedWorldSimulationEngine.threadSuspended){

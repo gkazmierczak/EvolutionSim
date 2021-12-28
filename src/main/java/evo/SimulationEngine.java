@@ -4,10 +4,6 @@ package evo;
 import classes.SimulationParams;
 import enums.MapType;
 import gui.MapRenderer;
-import gui.SimulationRenderer;
-import javafx.application.Platform;
-
-import java.util.Timer;
 
 public class SimulationEngine implements Runnable {
     private GenericWorldMap map;
@@ -41,6 +37,9 @@ public class SimulationEngine implements Runnable {
     public MapType getSimulatedMapType(){
         System.out.println(this.map.getMapType());
         return this.map.getMapType();
+    }
+    public void interrupt(){
+        this.isRunning=false;
     }
 
 

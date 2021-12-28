@@ -411,8 +411,4 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
         this.steppeEmptyFieldCount = width * height - jungleEmptyFieldCount;
 
     }
-
 }
-//TODO - ZAPIS CSV
-// TODO sprawdzić gradla?
-// TODO - tyle?

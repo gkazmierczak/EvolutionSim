@@ -18,6 +18,7 @@ import javafx.scene.paint.Color;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.List;
 
 public class MapRenderer {
     GenericWorldMap map;
@@ -146,6 +147,9 @@ public class MapRenderer {
             return view.vBox;
         }
 
+    }
+    public List<String[]> getSimulationData(){
+        return this.mapStatBox.getSimulationData();
     }
     public void highlightGenotype(){
         this.highlightedGenotype=map.getDominantGenotype();

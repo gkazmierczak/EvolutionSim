@@ -2,6 +2,7 @@ package classes;
 
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class Genes {
     private final int[] genotype;
@@ -62,11 +63,23 @@ public class Genes {
     public int getGeneCount() {
         return geneCount;
     }
+    public boolean equals(Object other) {
+        if (this == other)
+            return true;
+        if (!(other instanceof Genes))
+            return false;
+        Genes that = (Genes) other;
+        return Arrays.equals(this.genotype,that.genotype);
+    }
 
+    public int hashCode() {
+        return Objects.hash(this.genotype);
+    }
     public int[] getGenotype() {
         return genotype;
     }
     public int getMove(){
         return this.genotype[(int) Math.floor(Math.random()*this.size)];
     }
+
 }

@@ -17,6 +17,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Font;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 
 public class MapStatBox {
     GridPane grid;
@@ -50,11 +53,11 @@ public class MapStatBox {
         entityCountChart.getData().add(grassCounts);
         entityCountChart.setCreateSymbols(false);
         entityCountChart.setLegendVisible(true);
-        entityCountChart.setLegendSide(Side.BOTTOM);
+        entityCountChart.setLegendSide(Side.RIGHT);
         final NumberAxis lifespanXAxis=new NumberAxis();
         final NumberAxis lifespanYAxis=new NumberAxis();
         lifespanXAxis.setLabel("Epoch");
-        lifespanYAxis.setLabel("Lifespan");
+        lifespanYAxis.setLabel("Avg lifespan");
         lifespanXAxis.setForceZeroInRange(false);
         lifespanYAxis.setForceZeroInRange(false);
 
@@ -68,7 +71,7 @@ public class MapStatBox {
         final NumberAxis childrenXAxis=new NumberAxis();
         final NumberAxis childrenYAxis=new NumberAxis();
         childrenXAxis.setLabel("Epoch");
-        childrenYAxis.setLabel("Count");
+        childrenYAxis.setLabel("Avg children");
         childrenXAxis.setForceZeroInRange(false);
         childrenYAxis.setForceZeroInRange(false);
         this.avgChildrenCounts.setName("Children count");
@@ -81,7 +84,7 @@ public class MapStatBox {
         final NumberAxis energyXAxis=new NumberAxis();
         final NumberAxis energyYAxis=new NumberAxis();
         energyXAxis.setLabel("Epoch");
-        energyYAxis.setLabel("Energy level");
+        energyYAxis.setLabel("Avg energy");
         energyXAxis.setForceZeroInRange(false);
         energyYAxis.setForceZeroInRange(false);
 
@@ -105,27 +108,28 @@ public class MapStatBox {
         hBox.getChildren().add(dominantGenotypeLabel);
         epochLabel.setFont(Font.font(16));
         this.grid.add(hBox,0,0,2,1);
-        this.grid.add(entityCountChart,0,1);
+        this.grid.add(entityCountChart,1,1);
         this.grid.add(avgEnergyChart,0,2);
-        this.grid.add(avgChildrenChart,1,1);
+        this.grid.add(avgChildrenChart,0,1);
         this.grid.add(avgLifespanChart,1,2);
 
         updateStats();
     }
     public void updateWidth(double newValue){
         double unit=newValue/100;
-        this.grid.setPrefWidth(37*unit);
+        this.grid.setPrefWidth(40*unit);
         this.grid.getColumnConstraints().clear();
         this.grid.getColumnConstraints().add(new ColumnConstraints(18*unit));
-        this.grid.getColumnConstraints().add(new ColumnConstraints(18*unit));
+        this.grid.getColumnConstraints().add(new ColumnConstraints(22*unit));
     }
     public void updateHeight(double newValue){
         double unit=newValue/100;
         this.grid.setPrefHeight(50*unit);
         this.grid.getRowConstraints().clear();
         this.grid.getRowConstraints().add(new RowConstraints(3*unit));
+//        this.entityCountChart.setMaxHeight(20*unit);
 //        this.grid.getRowConstraints().add(new RowConstraints(24*unit));
-//        this.grid.getRowConstraints().add(new RowConstraints(24*unit));
+//        this.grid.getRowConstraints().add(new RowConstraints(20*unit));
     }
     public void updateStats(){
         if (animalCounts.getData().size()>250) {
@@ -150,6 +154,14 @@ public class MapStatBox {
         this.avgChildrenCounts.getData().add(new XYChart.Data(map.getEpoch(),map.getAverageChildrenCount()));
 //        this.dominantGenotypeLabel.setText(Arrays.toString(map.getDominantGenotype()));
         this.epochLabel.setText("EPOCH: "+String.valueOf(map.getEpoch()));
+        int[] genotype = map.getDominantGenotype();
+        if(genotype!=null){
+            String result = Arrays.stream(genotype).mapToObj(String::valueOf).collect(Collectors.joining(""));
+            this.dominantGenotypeLabel.setText("Dominant genotype: "+result);
+        }
+        else{
+            this.dominantGenotypeLabel.setText("");
+        }
     }
 
     public void handleButtonPress(){

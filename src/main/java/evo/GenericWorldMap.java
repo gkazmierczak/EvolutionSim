@@ -1,6 +1,7 @@
 package evo;
 
 import classes.Animal;
+import classes.Genes;
 import classes.Grass;
 import classes.Vector2D;
 import enums.MapType;
@@ -26,17 +27,23 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
     private final List<Animal> livingAnimalsList = new ArrayList<>();
     private final List<Animal> allAnimalsList = new ArrayList<>();
     private final HashSet<Vector2D> reproductionLocationSet = new HashSet<>();
-
+    private final Map<Genes, Integer>  genotypeMap=new HashMap<>();
     public List<IMapElement> objectsAt(Vector2D position) {
         return map.get(position);
     }
 
     public void place(IMapElement element, Vector2D position) {
         addToMap(element, position);
-        if (element instanceof Animal) {
-            livingAnimalsList.add((Animal) element);
-            allAnimalsList.add((Animal) element);
+        if (element instanceof Animal animal) {
+            livingAnimalsList.add(animal);
+            allAnimalsList.add(animal);
             animalCount += 1;
+            if(genotypeMap.get(animal.getGenes())!=null){
+                genotypeMap.put(animal.getGenes(),genotypeMap.get(animal.getGenes())+1);
+            }
+            else {
+                genotypeMap.put(animal.getGenes(), 1);
+            }
         }
     }
 
@@ -124,6 +131,7 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
                     }
                 }
                 animalCount -= 1;
+                genotypeMap.put(animal.getGenes(), genotypeMap.get(animal.getGenes())-1);
                 iterator.remove();
             }
         }
@@ -278,21 +286,29 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
     }
 
     public int[] getDominantGenotype() {
-//        TODO
-        int[] dominantGenotype = null;
-        int count = 0;
-        for (Animal animal : livingAnimalsList) {
-            if (Arrays.equals(animal.getGenes().getGenotype(), dominantGenotype)) {
-                count += 1;
-            } else {
-                count -= 1;
-                if (count <= 0) {
-                    dominantGenotype = animal.getGenes().getGenotype();
-                    count = 1;
-                }
-            }
+//        TODO - wybieranie dominującego genotypu
+        Optional<Map.Entry<Genes, Integer>> dominantGenes=genotypeMap.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue));
+        if(dominantGenes.isPresent()){
+            return dominantGenes.get().getKey().getGenotype();
         }
-        return dominantGenotype;
+        else{
+            return null;
+        }
+//        System.out.println();
+//        int[] dominantGenotype = null;
+//        int count = 0;
+//        for (Animal animal : livingAnimalsList) {
+//            if (Arrays.equals(animal.getGenes().getGenotype(), dominantGenotype)) {
+//                count += 1;
+//            } else {
+//                count -= 1;
+//                if (count <= 0) {
+//                    dominantGenotype = animal.getGenes().getGenotype();
+//                    count = 1;
+//                }
+//            }
+//        }
+//        return dominantGenotype;
     }
 
     public double getAverageDeadAnimalLifespan() {
@@ -407,3 +423,7 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
     }
 
 }
+//TODO - ZAPIS CSV
+// TODO - LEPSZE LOGI
+// TODO sprawdzić gradla?
+// TODO - tyle?

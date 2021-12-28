@@ -45,8 +45,8 @@ public class SimulationRenderer {
         this.mainBox.getChildren().add(boundedMapRenderer.getCurrentView());
         this.primaryStage.getScene().setRoot(mainBox);
         this.primaryStage.getScene().getStylesheets().add("stylesheet.css");
-        this.primaryStage.setMinWidth(800);
-        this.primaryStage.setMinHeight(600);
+        this.primaryStage.setMinWidth(1280);
+        this.primaryStage.setMinHeight(720);
         this.primaryStage.setWidth(1280.0);
         this.primaryStage.setHeight(720.0);
         this.loopedMapRenderer.updateWidth(1280.0);
@@ -64,17 +64,12 @@ public class SimulationRenderer {
             this.loopedMapRenderer.updateHeight(newValue);
             this.updateMiddleVBoxHeight((double) newValue);
             this.boundedMapRenderer.updateHeight(newValue);
-
         });
 
     }
     public void getNextFrame(){
         this.loopedMapRenderer.getNextFrame();
         this.boundedMapRenderer.getNextFrame();
-//        System.out.println("next frame");
-
-//        primaryStage.widthProperty();
-
     }
     public MapRenderer getBoundedMapRenderer() {
         return boundedMapRenderer;
@@ -84,7 +79,7 @@ public class SimulationRenderer {
         return loopedMapRenderer;
     }
     public void simulationFinished(SimulationEngine engine){
-        outputLog.printMessage("Simulation of "+engine.getSimulatedMapType()+" world has finished.");
+        outputLog.printMessage("Simulation of "+engine.getSimulatedMapType()+" world has finished.\n");
     }
     public void printMessageToLog(String message){
         this.outputLog.printMessage(message);

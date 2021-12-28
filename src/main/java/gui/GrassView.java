@@ -1,6 +1,7 @@
 package gui;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -19,6 +20,7 @@ public class GrassView extends Parent {
             imageView.setFitWidth(20);
             imageView.setFitHeight(20);
             vBox.getChildren().add(imageView);
+            vBox.setAlignment(Pos.CENTER);
             if(inJungle){
                 vBox.setBackground(new Background(new BackgroundFill(Color.FORESTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
             }

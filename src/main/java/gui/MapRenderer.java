@@ -85,11 +85,11 @@ public class MapRenderer {
 
     public void updateWidth(Number newValue) {
         double unit = (double) newValue / 100;
-        this.vBox.setPrefWidth(37 * unit);
-        this.grid.setPrefWidth(37 * unit);
+        this.vBox.setPrefWidth(40 * unit);
+        this.grid.setPrefWidth(40 * unit);
         this.grid.getColumnConstraints().clear();
         for (int i = 0; i < width; i++) {
-            this.grid.getColumnConstraints().add(new ColumnConstraints((37 * unit) / (width)));
+            this.grid.getColumnConstraints().add(new ColumnConstraints((40 * unit) / (width)));
         }
         this.statBox.updateWidth((Double) newValue);
 

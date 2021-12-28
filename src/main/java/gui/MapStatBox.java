@@ -104,7 +104,7 @@ public class MapStatBox {
         this.grid.add(avgChildrenChart, 0, 1);
         this.grid.add(avgLifespanChart, 1, 2);
 
-        updateStats();
+//        updateStats();
     }
 
     public void updateWidth(double newValue) {

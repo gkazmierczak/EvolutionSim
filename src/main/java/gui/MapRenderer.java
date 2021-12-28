@@ -4,16 +4,14 @@ import classes.Animal;
 import classes.Grass;
 import classes.Vector2D;
 import evo.GenericWorldMap;
-import interfaces.ButtonPressHandler;
+import interfaces.IButtonPressHandler;
 import interfaces.IMapElement;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
@@ -27,31 +25,31 @@ public class MapRenderer {
     int height;
     VBox vBox;
     GridPane grid;
-    MapStatBox statBox;
-    ButtonPressHandler handler;
+    MapStatBox mapStatBox;
+    AnimalStatBox animalStatBox;
+    IButtonPressHandler handler;
     Image grassImage;
     Image[] animalImages;
-    Background steppeBackgound;
-    Background jungleBackground;
+    int[] highlightedGenotype;
 
-    public MapRenderer(GenericWorldMap map, ButtonPressHandler handler) {
+
+    public MapRenderer(GenericWorldMap map, IButtonPressHandler handler) {
         this.map = map;
         this.width = map.width;
         this.height = map.height;
         this.vBox = new VBox();
-        this.jungleBackground = new Background(new BackgroundFill(Color.FORESTGREEN, CornerRadii.EMPTY, Insets.EMPTY));
-        this.steppeBackgound = new Background(new BackgroundFill(Color.OLIVEDRAB, CornerRadii.EMPTY, Insets.EMPTY));
         this.handler = handler;
-        this.animalImages = new Image[8];
+        this.animalImages = new Image[9];
         for (int i = 0; i < 8; i++) {
             try {
-                animalImages[i] = new Image(new FileInputStream("src/main/resources/animal" + i + ".png"), 20, 20, true, true);
+                animalImages[i] = new Image(new FileInputStream("src/main/resources/animal" + i + ".png"), 32, 32, true, true);
             } catch (FileNotFoundException exception) {
                 System.out.println(exception.getMessage());
             }
         }
         try {
-            grassImage = new Image(new FileInputStream("src/main/resources/plant.png"), 20, 20, true, true);
+            animalImages[8] = new Image(new FileInputStream("src/main/resources/deadAnimal.png"), 64, 64, true, true);
+            grassImage = new Image(new FileInputStream("src/main/resources/plant.png"), 32, 32, true, true);
         } catch (FileNotFoundException e) {
             grassImage = null;
         }
@@ -60,26 +58,31 @@ public class MapRenderer {
     public void init() {
         grid = new GridPane();
         vBox.getChildren().add(grid);
-        this.statBox = new MapStatBox(map, handler);
-        vBox.getChildren().add(statBox.grid);
+        this.mapStatBox = new MapStatBox(map, handler);
+        vBox.getChildren().add(mapStatBox.grid);
         grid.setAlignment(Pos.CENTER);
-        this.grid.setPrefSize(500, 500);
-        getNextFrame();
+        animalStatBox=new AnimalStatBox(this.map,animalImages);
+//        this.grid.setPrefSize(500, 500);
+//        this.grid.addEventHandler();
+        getNextFrame(false);
     }
-
-    public void getNextFrame() {
+    public AnimalStatBox getAnimalStatBox(){
+        return this.animalStatBox;
+    }
+    public void getNextFrame(boolean highlight) {
         this.grid.getChildren().clear();
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                Parent parent = getElementViewAt(i, height - j - 1);
+                Parent parent = getElementViewAt(i, height - j - 1,highlight);
                 if (parent != null) {
                     grid.add(parent, i, j);
                     grid.setHalignment(parent, HPos.CENTER);
                 }
             }
         }
-        this.statBox.updateStats();
+        this.mapStatBox.updateStats();
+        this.animalStatBox.updateStats();
 
     }
 
@@ -91,7 +94,7 @@ public class MapRenderer {
         for (int i = 0; i < width; i++) {
             this.grid.getColumnConstraints().add(new ColumnConstraints((40 * unit) / (width)));
         }
-        this.statBox.updateWidth((Double) newValue);
+        this.mapStatBox.updateWidth((Double) newValue);
 
     }
 
@@ -103,19 +106,16 @@ public class MapRenderer {
         for (int i = 0; i < height; i++) {
             this.grid.getRowConstraints().add(new RowConstraints((50 * unit) / (height)));
         }
-        this.statBox.updateHeight((Double) newValue);
+        this.mapStatBox.updateHeight((Double) newValue);
     }
 
-    public Parent getElementViewAt(int column, int row) {
+    public Parent getElementViewAt(int column, int row,boolean highlight) {
         IMapElement mapElement = map.topObjectAt(new Vector2D(column, row));
         if (mapElement == null) {
-//            return null;
             FlowPane field = new FlowPane();
             if (map.inJungle(new Vector2D(column, row))) {
-//                field.setBackground(jungleBackground);
                 field.getStyleClass().add("jungle-field");
             } else {
-//                field.setBackground(steppeBackgound);
                 field.getStyleClass().add("steppe-field");
 
             }
@@ -125,17 +125,32 @@ public class MapRenderer {
             return grassView.vBox;
         } else {
             Animal animal = (Animal) mapElement;
+
             AnimalView view = new AnimalView(animal, animalImages);
+            view.vBox.addEventHandler(MouseEvent.MOUSE_CLICKED,event -> {
+                System.out.println("klik");
+                System.out.println(animal);
+                animal.toggleSelection();
+                this.animalStatBox.updateStats();
+            });
             if (map.inJungle(animal.getPosition())) {
-                view.vBox.setBackground(new Background(new BackgroundFill(Color.FORESTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+                view.vBox.getStyleClass().add("jungle-field");
             } else {
-                view.vBox.setBackground(new Background(new BackgroundFill(Color.OLIVEDRAB, CornerRadii.EMPTY, Insets.EMPTY)));
+                view.vBox.getStyleClass().add("steppe-field");
+            }
+            if(highlight){
+                if(Arrays.equals(animal.getGenes().getGenotype(),highlightedGenotype)){
+                    view.vBox.getStyleClass().add("highlighted-field");
+                }
             }
             return view.vBox;
         }
 
     }
-
+    public void highlightGenotype(){
+        this.highlightedGenotype=map.getDominantGenotype();
+        getNextFrame(true);
+    }
     public VBox getCurrentView() {
         return this.vBox;
     }

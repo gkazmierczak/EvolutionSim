@@ -4,3 +4,6 @@
 .jungle-field{
     -fx-background-color: #228b22;
 }
+.highlighted-field{
+    -fx-background-color: #6f12b8;
+}

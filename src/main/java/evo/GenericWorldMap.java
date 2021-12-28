@@ -28,6 +28,7 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
     private final List<Animal> allAnimalsList = new ArrayList<>();
     private final HashSet<Vector2D> reproductionLocationSet = new HashSet<>();
     private final Map<Genes, Integer>  genotypeMap=new HashMap<>();
+    private Animal trackedAnimal;
     public List<IMapElement> objectsAt(Vector2D position) {
         return map.get(position);
     }
@@ -189,7 +190,12 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
     public int getAnimalCount() {
         return this.animalCount;
     }
-
+    public void setTrackedAnimal(Animal animal){
+        this.trackedAnimal=animal;
+    }
+    public Animal getTrackedAnimal(){
+        return this.trackedAnimal;
+    }
     public boolean spawnGrass(int grassEnergy) {
         if (steppeEmptyFieldCount > 0 || jungleEmptyFieldCount > 0) {
             spawnGrassInSteppe(grassEnergy);
@@ -286,7 +292,6 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
     }
 
     public int[] getDominantGenotype() {
-//        TODO - wybieranie dominującego genotypu
         Optional<Map.Entry<Genes, Integer>> dominantGenes=genotypeMap.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue));
         if(dominantGenes.isPresent()){
             return dominantGenes.get().getKey().getGenotype();
@@ -294,21 +299,6 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
         else{
             return null;
         }
-//        System.out.println();
-//        int[] dominantGenotype = null;
-//        int count = 0;
-//        for (Animal animal : livingAnimalsList) {
-//            if (Arrays.equals(animal.getGenes().getGenotype(), dominantGenotype)) {
-//                count += 1;
-//            } else {
-//                count -= 1;
-//                if (count <= 0) {
-//                    dominantGenotype = animal.getGenes().getGenotype();
-//                    count = 1;
-//                }
-//            }
-//        }
-//        return dominantGenotype;
     }
 
     public double getAverageDeadAnimalLifespan() {
@@ -424,6 +414,5 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
 
 }
 //TODO - ZAPIS CSV
-// TODO - LEPSZE LOGI
 // TODO sprawdzić gradla?
 // TODO - tyle?

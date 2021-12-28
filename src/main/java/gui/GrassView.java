@@ -17,8 +17,8 @@ public class GrassView extends Parent {
     public GrassView(Image image,boolean inJungle){
         if(image!=null){
             ImageView imageView = new ImageView(image);
-            imageView.setFitWidth(20);
-            imageView.setFitHeight(20);
+            imageView.setFitWidth(24);
+            imageView.setFitHeight(24);
             vBox.getChildren().add(imageView);
             vBox.setAlignment(Pos.CENTER);
             if(inJungle){
@@ -26,7 +26,6 @@ public class GrassView extends Parent {
             }
             else{
                 vBox.setBackground(new Background(new BackgroundFill(Color.OLIVEDRAB, CornerRadii.EMPTY, Insets.EMPTY)));
-
             }
         }
         else{

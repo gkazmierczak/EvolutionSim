@@ -1,9 +1,7 @@
 package gui;
 
 import evo.GenericWorldMap;
-import interfaces.ButtonPressHandler;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import interfaces.IButtonPressHandler;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.chart.LineChart;
@@ -37,7 +35,7 @@ public class MapStatBox {
     private XYChart.Series<Number,Number> avgChildrenCounts=new XYChart.Series<>();
     private XYChart.Series<Number,Number> avgEnergyLevels=new XYChart.Series<>();
 
-    public MapStatBox(GenericWorldMap map, ButtonPressHandler handler){
+    public MapStatBox(GenericWorldMap map, IButtonPressHandler handler){
         this.map=map;
         this.grid=new GridPane();
         final NumberAxis xAxis=new NumberAxis();

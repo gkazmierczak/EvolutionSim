@@ -4,7 +4,7 @@ import classes.SimulationParams;
 import enums.MapType;
 import gui.SimulationParamMenu;
 import gui.SimulationRenderer;
-import interfaces.ButtonPressHandler;
+import interfaces.IButtonPressHandler;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 
 import java.util.Objects;
 
-public class EvolutionSimulator extends Application implements ButtonPressHandler {
+public class EvolutionSimulator extends Application implements IButtonPressHandler {
     Stage primaryStage;
     SimulationParams simulationParams;
     SimulationParamMenu simulationParamMenu = new SimulationParamMenu(this);
@@ -42,10 +42,10 @@ public class EvolutionSimulator extends Application implements ButtonPressHandle
     public void updateMapRender(MapType mapType){
         Platform.runLater(() -> {
             if(mapType==MapType.BOUNDED){
-                this.renderer.getBoundedMapRenderer().getNextFrame();
+                this.renderer.getBoundedMapRenderer().getNextFrame(false);
             }
             else{
-                this.renderer.getLoopedMapRenderer().getNextFrame();
+                this.renderer.getLoopedMapRenderer().getNextFrame(false);
             }
 
         });
@@ -92,20 +92,16 @@ public class EvolutionSimulator extends Application implements ButtonPressHandle
             this.boundedWorldSimulationThread.start();
         } else if (mapType == MapType.LOOPED) {
             renderer.printMessageToLog("Starting simulation of LOOPED world.\n");
-
             this.loopedWorldSimulationThread.start();
         }
     }
 
     public void pauseSimulation(MapType mapType) {
         if (mapType == MapType.LOOPED) {
-            System.out.println("loop");
+            renderer.printMessageToLog("Paused simulation of LOOPED world.\n");
            this.loopedWorldSimulationEngine.threadSuspended=true;
-
-            //...
         } else {
-            //...
-            System.out.println("bound");
+            renderer.printMessageToLog("Paused simulation of BOUNDED world.\n");
             this.boundedWorldSimulationEngine.threadSuspended=true;
         }
 
@@ -113,14 +109,10 @@ public class EvolutionSimulator extends Application implements ButtonPressHandle
 
     public void resumeSimulation(MapType mapType) {
         if (mapType == MapType.LOOPED) {
-            System.out.println("loop");
+            renderer.printMessageToLog("Resumed simulation of LOOPED world.\n");
             this.loopedWorldSimulationEngine.threadSuspended=false;
-
-
-            //...
         } else {
-            //...
-            System.out.println("bound");
+            renderer.printMessageToLog("Resumed simulation of BOUNDED world.\n");
             this.boundedWorldSimulationEngine.threadSuspended=false;
         }
 
@@ -137,11 +129,44 @@ public class EvolutionSimulator extends Application implements ButtonPressHandle
             } else if (Objects.equals(button.getText(), "Resume")) {
                 resumeSimulation((MapType) param);
                 button.setText("Pause");
-
+            }
+        }
+        else if (param instanceof String){
+            if (param.equals("SAVE")){
+                this.saveSimulationData();
+            }
+            else if (param.equals("HIGHLIGHT")){
+                this.highlight();
             }
         }
     }
     public void printMessage(String message){
         this.renderer.printMessageToLog(message);
+    }
+    public void saveSimulationData(){
+        if(loopedWorldSimulationEngine.threadSuspended||boundedWorldSimulationEngine.threadSuspended){
+            if(loopedWorldSimulationEngine.threadSuspended){
+
+            }
+            if(boundedWorldSimulationEngine.threadSuspended){
+
+            }
+        }
+        else{
+            this.renderer.printMessageToLog("At least one simulation needs to be paused in order to save data.\n");
+        }
+    }
+    public void highlight(){
+        if(loopedWorldSimulationEngine.threadSuspended||boundedWorldSimulationEngine.threadSuspended){
+            if(loopedWorldSimulationEngine.threadSuspended){
+                renderer.highlightGenotype(MapType.LOOPED);
+            }
+            if(boundedWorldSimulationEngine.threadSuspended){
+                renderer.highlightGenotype(MapType.BOUNDED);
+            }
+        }
+        else{
+            this.renderer.printMessageToLog("Simulation needs to be paused before highlighting.\n");
+        }
     }
 }

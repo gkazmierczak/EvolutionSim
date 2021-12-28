@@ -1,6 +1,7 @@
 package classes;
 
 import enums.*;
+import evo.GenericWorldMap;
 import interfaces.*;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
@@ -11,7 +12,7 @@ public class Animal implements IMapElement {
     public MapDirection orient;
     private Vector2D position;
     public int energy;
-    private final IWorldMap map;
+    private final GenericWorldMap map;
     private final Genes genes;
     private final int dailyEnergyCost;
     private int age = 0;
@@ -28,7 +29,7 @@ public class Animal implements IMapElement {
         return this.position;
     }
 
-    public Animal(Vector2D initialPosition, IWorldMap map, int initialEnergy, int dailyEnergyCost) {
+    public Animal(Vector2D initialPosition, GenericWorldMap map, int initialEnergy, int dailyEnergyCost) {
         this.position = initialPosition;
         this.map = map;
         this.energy = initialEnergy;
@@ -48,7 +49,7 @@ public class Animal implements IMapElement {
         this.dailyEnergyCost = clone.dailyEnergyCost;
     }
 
-    public Animal(Vector2D initialPosition, IWorldMap map, int initialEnergy, int dailyEnergyCost, Animal parent1, Animal parent2) {
+    public Animal(Vector2D initialPosition, GenericWorldMap map, int initialEnergy, int dailyEnergyCost, Animal parent1, Animal parent2) {
         this.position = initialPosition;
         this.map = map;
         this.energy = initialEnergy;
@@ -128,9 +129,30 @@ public class Animal implements IMapElement {
             observer.positionChanged(oldPos, newPos, this);
         }
     }
+    public void toggleSelection(){
+        if(this.isTracked){
+            this.map.setTrackedAnimal(null);
+            this.isTracked=false;
+        }
+        else{
+            if(this.map.getTrackedAnimal()!=null){
+                this.map.getTrackedAnimal().toggleSelection();
+            }
+            this.isTracked=true;
+            this.map.setTrackedAnimal(this);
+        }
+    }
 
-    public void setDeathEpoch(long epoque) {
-        deathEpoch = epoque;
+    public void setDeathEpoch(long epoch) {
+        deathEpoch = epoch;
+    }
+
+    public long getBirthEpoch() {
+        return birthEpoch;
+    }
+
+    public long getDeathEpoch() {
+        return deathEpoch;
     }
 
     public int getChildrenCount() {

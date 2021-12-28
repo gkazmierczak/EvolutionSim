@@ -1,17 +1,17 @@
 package gui;
 
+import enums.MapType;
 import evo.BoundedWorldMap;
-import evo.GenericWorldMap;
 import evo.LoopedWorldMap;
 import evo.SimulationEngine;
-import interfaces.ButtonPressHandler;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import interfaces.IButtonPressHandler;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
 
 public class SimulationRenderer {
     private MapRenderer loopedMapRenderer;
@@ -21,9 +21,12 @@ public class SimulationRenderer {
     private OutputLog outputLog;
     private Stage primaryStage;
     private HBox mainBox;
-    private VBox middleVBox;
-    private ButtonPressHandler handler;
-    public SimulationRenderer(Stage primaryStage, LoopedWorldMap loopedWorldMap, BoundedWorldMap boundedWorldMap, ButtonPressHandler handler){
+    private Button saveBtn;
+    private Button highlightBtn;
+//    private VBox middleVBox;
+    private VBox middleBox;
+    private IButtonPressHandler handler;
+    public SimulationRenderer(Stage primaryStage, LoopedWorldMap loopedWorldMap, BoundedWorldMap boundedWorldMap, IButtonPressHandler handler){
         this.primaryStage=primaryStage;
         this.loopedWorldMap=loopedWorldMap;
         this.boundedWorldMap=boundedWorldMap;
@@ -38,10 +41,22 @@ public class SimulationRenderer {
         boundedMapRenderer.init();
         this.mainBox=new HBox();
         this.mainBox.getChildren().add(loopedMapRenderer.getCurrentView());
-        middleVBox=new VBox();
+        middleBox=new VBox();
         outputLog=new OutputLog();
-        middleVBox.getChildren().add(outputLog.textArea);
-        this.mainBox.getChildren().add(middleVBox);
+        highlightBtn=new Button("Highlight");
+        highlightBtn.setOnAction((event)->{
+            handler.handleButtonPress(highlightBtn,"HIGHLIGHT");
+        });
+        saveBtn=new Button("Save CSV");
+        saveBtn.setOnAction((event)->{
+            handler.handleButtonPress(saveBtn,"SAVE");
+        });
+        this.middleBox.getChildren().add(loopedMapRenderer.getAnimalStatBox().vBox);
+        this.middleBox.getChildren().add(highlightBtn);
+        this.middleBox.getChildren().add(saveBtn);
+        this.middleBox.getChildren().add(boundedMapRenderer.getAnimalStatBox().vBox);
+        middleBox.getChildren().add(outputLog.textArea);
+        this.mainBox.getChildren().add(middleBox);
         this.mainBox.getChildren().add(boundedMapRenderer.getCurrentView());
         this.primaryStage.getScene().setRoot(mainBox);
         this.primaryStage.getScene().getStylesheets().add("stylesheet.css");
@@ -53,6 +68,7 @@ public class SimulationRenderer {
         this.loopedMapRenderer.updateHeight(720.0);
         updateMiddleVBoxWidth(1280.0);
         updateMiddleVBoxHeight(720.0);
+        middleBox.setAlignment(Pos.CENTER);
         this.boundedMapRenderer.updateHeight(720.0);
         this.boundedMapRenderer.updateWidth(1280.0);
         this.primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
@@ -68,8 +84,16 @@ public class SimulationRenderer {
 
     }
     public void getNextFrame(){
-        this.loopedMapRenderer.getNextFrame();
-        this.boundedMapRenderer.getNextFrame();
+        this.loopedMapRenderer.getNextFrame(false);
+        this.boundedMapRenderer.getNextFrame(false);
+    }
+    public void highlightGenotype(MapType mapType){
+        if(mapType==MapType.LOOPED){
+            this.loopedMapRenderer.highlightGenotype();
+        }
+        else{
+            this.boundedMapRenderer.highlightGenotype();
+        }
     }
     public MapRenderer getBoundedMapRenderer() {
         return boundedMapRenderer;

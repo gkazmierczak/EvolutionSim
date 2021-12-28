@@ -22,22 +22,13 @@ public class AnimalView extends Parent {
     public VBox vBox = new VBox();
     private Animal animal;
 
-    //    Label position;
     public AnimalView(Animal animal, Image[] images) {
         this.animal = animal;
-//        try {
-//            Image image = new Image(new FileInputStream("src/main/resources/animal"+animal.orient.ordinal()+".png"),20,20,true,true);
         Image image = images[animal.orient.ordinal()];
         ImageView imageView = new ImageView(image);
-        imageView.setFitWidth(20);
-        imageView.setFitHeight(20);
+        imageView.setFitWidth(24);
+        imageView.setFitHeight(24);
         vBox.getChildren().add(imageView);
-//        }
-//        catch (FileNotFoundException e) {
-//            vBox.setBackground(new Background(new BackgroundFill(Color.SADDLEBROWN, new CornerRadii(50), Insets.EMPTY)));
-//        }
-//        position=new Label(animal.getPosition().toString());
-//        vBox.getChildren().add(position);
         vBox.setAlignment(Pos.CENTER);
     }
 

@@ -11,8 +11,8 @@ public class SimulationParams {
     public int grassSpawnRate=1;
     public int startingAnimalCount;
     public int updateStepTime;
-
-    public SimulationParams(int width, int height, double jungleRatio, int grassEnergy, int animalStartEnergy, int dailyEnergyCost, int minProcreateEnergy, int startingAnimalCount, int updateStepTime) {
+    public boolean isMagic;
+    public SimulationParams(int width, int height, double jungleRatio, int grassEnergy, int animalStartEnergy, int dailyEnergyCost, int minProcreateEnergy, int startingAnimalCount, int updateStepTime,boolean isMagic) {
         this.width = width;
         this.height = height;
         this.jungleRatio=jungleRatio;
@@ -22,6 +22,7 @@ public class SimulationParams {
         this.minProcreateEnergy=minProcreateEnergy;
         this.startingAnimalCount=startingAnimalCount;
         this.updateStepTime=updateStepTime;
+        this.isMagic=isMagic;
     }
 
     public SimulationParams() {
@@ -65,5 +66,9 @@ public class SimulationParams {
 
     public void setWidth(int width) {
         this.width = width;
+    }
+
+    public void setMagic(boolean magic) {
+        isMagic = magic;
     }
 }

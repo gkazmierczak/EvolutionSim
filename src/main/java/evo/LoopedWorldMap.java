@@ -2,6 +2,7 @@ package evo;
 
 import classes.Animal;
 import classes.Vector2D;
+import enums.MapType;
 import interfaces.IMapElement;
 import interfaces.IPositionObserver;
 import interfaces.IWorldMap;
@@ -11,9 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 public class LoopedWorldMap extends GenericWorldMap implements IWorldMap, IPositionObserver {
-    public List<IMapElement> objectsAt(Vector2D position) {
-        return super.objectsAt(position);
-    }
 
     @Override
     public void positionChanged(Vector2D oldPosition, Vector2D newPosition, Animal animal) {
@@ -41,5 +39,6 @@ public class LoopedWorldMap extends GenericWorldMap implements IWorldMap, IPosit
 
     public LoopedWorldMap(int width, int height,double jungleRatio) {
         super(width, height,jungleRatio);
+        this.mapType= MapType.LOOPED;
     }
 }

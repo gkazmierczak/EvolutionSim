@@ -13,6 +13,5 @@ public class Grass implements IMapElement {
     public Grass(Vector2D position,int energyValue){
         this.position=position;
         this.energyValue=energyValue;
-        view=new GrassView();
     }
 }

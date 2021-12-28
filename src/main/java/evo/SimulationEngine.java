@@ -2,6 +2,7 @@ package evo;
 
 
 import classes.SimulationParams;
+import enums.MapType;
 import gui.MapRenderer;
 import gui.SimulationRenderer;
 import javafx.application.Platform;
@@ -15,10 +16,15 @@ public class SimulationEngine implements Runnable {
     private int updateDelay;
     private boolean isRunning=false;
     EvolutionSimulator simulator;
+    private boolean isMagic;
+    public volatile boolean threadSuspended=false;
+    int respawnsRemaining=3;
+
     public SimulationEngine(GenericWorldMap map, SimulationParams simulationParams){
         this.map=map;
         this.simulationParams=simulationParams;
         this.updateDelay=simulationParams.updateStepTime;
+        this.isMagic=simulationParams.isMagic;
     }
 
     public void setRenderer(MapRenderer renderer) {
@@ -32,31 +38,45 @@ public class SimulationEngine implements Runnable {
     public void init(){
         map.spawnAnimals(simulationParams.startingAnimalCount, simulationParams.animalStartEnergy, simulationParams.dailyEnergyCost);
     }
+    public MapType getSimulatedMapType(){
+        System.out.println(this.map.getMapType());
+        return this.map.getMapType();
+    }
 
 
     public void run(){
         isRunning=true;
+//        simulator.updateUI();
         while(isRunning){
+
             map.removeDeadAnimals();
             map.moveAnimals();
             map.feedAnimals();
             map.reproduceAnimals(simulationParams.minProcreateEnergy);
             boolean spawned=map.spawnGrass(simulationParams.grassEnergy);
+            if(isMagic){
+                if(map.getAnimalCount()<=5 && respawnsRemaining>0){
+                    map.respawnAnimals(5,simulationParams.animalStartEnergy);
+                    this.simulator.printMessage("5 animals appeared on "+map.getMapType().toString()+" map\n");
+                    respawnsRemaining-=1;
+                }
+            }
             if(!spawned){
                 if(map.getAnimalCount()==0){
-                    System.out.println("broke");
-                    System.out.println(map.getGrassCount());
-                    System.out.println(map.jungleEmptyFieldCount);
-                    System.out.println(map.steppeEmptyFieldCount);
+                    this.simulator.simulationFinished(this);
                     break;
                 }
             }
-            map.printAnimals();
-            this.simulator.updateUI();
+//            map.printAnimals();
+            this.simulator.updateMapRender(map.getMapType());
 //            break;
 
             try {
                 Thread.sleep(updateDelay);
+                synchronized(this) {
+                    while (threadSuspended)
+                        wait(100);
+                }
             }
             catch (InterruptedException e){
                 System.out.println(e.getMessage());

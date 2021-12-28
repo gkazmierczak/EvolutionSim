@@ -12,5 +12,5 @@ public interface IWorldMap {
     boolean canMoveTo(Vector2D position);
     Grass grassAt(Vector2D position);
 
-    long getEpoque();
+    long getEpoch();
 }

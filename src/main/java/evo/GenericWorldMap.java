@@ -8,6 +8,7 @@ import enums.MapType;
 import interfaces.IMapElement;
 import interfaces.IPositionObserver;
 import interfaces.IWorldMap;
+
 import java.util.*;
 
 public class GenericWorldMap implements IWorldMap, IPositionObserver {
@@ -27,8 +28,9 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
     private final List<Animal> livingAnimalsList = new ArrayList<>();
     private final List<Animal> allAnimalsList = new ArrayList<>();
     private final HashSet<Vector2D> reproductionLocationSet = new HashSet<>();
-    private final Map<Genes, Integer>  genotypeMap=new HashMap<>();
+    private final Map<Genes, Integer> genotypeMap = new HashMap<>();
     private Animal trackedAnimal;
+
     public List<IMapElement> objectsAt(Vector2D position) {
         return map.get(position);
     }
@@ -39,12 +41,7 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
             livingAnimalsList.add(animal);
             allAnimalsList.add(animal);
             animalCount += 1;
-            if(genotypeMap.get(animal.getGenes())!=null){
-                genotypeMap.put(animal.getGenes(),genotypeMap.get(animal.getGenes())+1);
-            }
-            else {
-                genotypeMap.put(animal.getGenes(), 1);
-            }
+            genotypeMap.merge(animal.getGenes(), 1, Integer::sum);
         }
     }
 
@@ -113,9 +110,11 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
     public boolean isInBounds(Vector2D position) {
         return position.x >= 0 && position.x < width && position.y >= 0 && position.y < height;
     }
-    public MapType getMapType(){
+
+    public MapType getMapType() {
         return this.mapType;
     }
+
     public void removeDeadAnimals() {
         epoch += 1;
         Iterator<Animal> iterator = livingAnimalsList.iterator();
@@ -132,7 +131,7 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
                     }
                 }
                 animalCount -= 1;
-                genotypeMap.put(animal.getGenes(), genotypeMap.get(animal.getGenes())-1);
+                genotypeMap.put(animal.getGenes(), genotypeMap.get(animal.getGenes()) - 1);
                 iterator.remove();
             }
         }
@@ -190,12 +189,15 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
     public int getAnimalCount() {
         return this.animalCount;
     }
-    public void setTrackedAnimal(Animal animal){
-        this.trackedAnimal=animal;
+
+    public void setTrackedAnimal(Animal animal) {
+        this.trackedAnimal = animal;
     }
-    public Animal getTrackedAnimal(){
+
+    public Animal getTrackedAnimal() {
         return this.trackedAnimal;
     }
+
     public boolean spawnGrass(int grassEnergy) {
         if (steppeEmptyFieldCount > 0 || jungleEmptyFieldCount > 0) {
             spawnGrassInSteppe(grassEnergy);
@@ -292,13 +294,8 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
     }
 
     public int[] getDominantGenotype() {
-        Optional<Map.Entry<Genes, Integer>> dominantGenes=genotypeMap.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue));
-        if(dominantGenes.isPresent()){
-            return dominantGenes.get().getKey().getGenotype();
-        }
-        else{
-            return null;
-        }
+        Optional<Map.Entry<Genes, Integer>> dominantGenes = genotypeMap.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue));
+        return dominantGenes.map(genesIntegerEntry -> genesIntegerEntry.getKey().getGenotype()).orElse(null);
     }
 
     public double getAverageDeadAnimalLifespan() {
@@ -324,12 +321,6 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
 
     public long getEpoch() {
         return epoch;
-    }
-
-    public void printAnimals() {
-        for (Animal animal : livingAnimalsList) {
-            System.out.println(animal.toString() + " " + animal.getPosition().toString() + " " + animal.orient + " " + animal.energy);
-        }
     }
 
     public double getAverageEnergy() {
@@ -361,21 +352,21 @@ public class GenericWorldMap implements IWorldMap, IPositionObserver {
 
     public void spawnAnimals(int spawnedAnimalsCount, int baseEnergy, int energyCost) {
         for (int i = 0; i < spawnedAnimalsCount; i++) {
-            Vector2D spawnPosition=randomEmptyPosition();
+            Vector2D spawnPosition = randomEmptyPosition();
             Animal animal = new Animal(spawnPosition, this, baseEnergy, energyCost);
             place(animal, spawnPosition);
         }
     }
-    public void respawnAnimals(int respawnedAnimalsCount, int energy){
+
+    public void respawnAnimals(int respawnedAnimalsCount, int energy) {
         for (int i = 0; i < respawnedAnimalsCount; i++) {
             randomEmptyPosition();
-            Vector2D spawnPosition=randomEmptyPosition();
+            Vector2D spawnPosition = randomEmptyPosition();
             Animal animal;
-            if(livingAnimalsList.size()>0) {
+            if (livingAnimalsList.size() > 0) {
                 animal = new Animal(livingAnimalsList.get(0), spawnPosition, energy);
-            }
-            else{
-                animal = new Animal(allAnimalsList.get(allAnimalsList.size()-1), spawnPosition, energy);
+            } else {
+                animal = new Animal(allAnimalsList.get(allAnimalsList.size() - 1), spawnPosition, energy);
 
             }
             place(animal, spawnPosition);

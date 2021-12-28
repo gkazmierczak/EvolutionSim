@@ -30,7 +30,7 @@ public class EvolutionSimulator extends Application implements IButtonPressHandl
     private SimulationEngine boundedWorldSimulationEngine;
     private Thread boundedWorldSimulationThread;
 
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         primaryStage.setTitle("Evolution Simulator");
         Scene scene = simulationParamMenu.getScene();
@@ -57,12 +57,12 @@ public class EvolutionSimulator extends Application implements IButtonPressHandl
         this.boundedWorldMap = new BoundedWorldMap(simulationParams.width, simulationParams.height, simulationParams.jungleRatio);
         this.renderer = new SimulationRenderer(this.primaryStage, this.loopedWorldMap, this.boundedWorldMap, this);
         this.loopedWorldSimulationEngine = new SimulationEngine(loopedWorldMap, simulationParams);
-        this.loopedWorldSimulationEngine.setRenderer(renderer.getLoopedMapRenderer());
+        this.loopedWorldSimulationEngine.setRenderer();
         loopedWorldSimulationEngine.init();
         loopedWorldSimulationEngine.setSimulator(this);
         loopedWorldSimulationThread = new Thread(loopedWorldSimulationEngine);
         this.boundedWorldSimulationEngine = new SimulationEngine(boundedWorldMap, simulationParams);
-        this.boundedWorldSimulationEngine.setRenderer(renderer.getBoundedMapRenderer());
+        this.boundedWorldSimulationEngine.setRenderer();
         boundedWorldSimulationEngine.init();
         boundedWorldSimulationEngine.setSimulator(this);
         boundedWorldSimulationThread = new Thread(boundedWorldSimulationEngine);
@@ -81,7 +81,9 @@ public class EvolutionSimulator extends Application implements IButtonPressHandl
             this.loopedWorldSimulationThread.start();
         }
         primaryStage.setOnCloseRequest(e -> {
+            loopedWorldSimulationEngine.threadSuspended=false;
             loopedWorldSimulationEngine.interrupt();
+            boundedWorldSimulationEngine.threadSuspended=false;
             boundedWorldSimulationEngine.interrupt();
             Platform.exit();
         });
@@ -160,7 +162,7 @@ public class EvolutionSimulator extends Application implements IButtonPressHandl
         if (file != null) {
             try {
                 PrintWriter pw = new PrintWriter(file);
-                pw.println("Animal count,Grass count,Average energy,Average lifespan,Avergage children count");
+                pw.println("Animal count,Grass count,Average energy,Average lifespan,Average children count");
                 simulationData.stream()
                         .map(this::convertToCSV)
                         .forEach(pw::println);

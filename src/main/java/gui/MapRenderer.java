@@ -7,13 +7,11 @@ import evo.GenericWorldMap;
 import interfaces.IButtonPressHandler;
 import interfaces.IMapElement;
 import javafx.geometry.HPos;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -62,23 +60,23 @@ public class MapRenderer {
         this.mapStatBox = new MapStatBox(map, handler);
         vBox.getChildren().add(mapStatBox.grid);
         grid.setAlignment(Pos.CENTER);
-        animalStatBox=new AnimalStatBox(this.map,animalImages);
-//        this.grid.setPrefSize(500, 500);
-//        this.grid.addEventHandler();
+        animalStatBox = new AnimalStatBox(this.map, animalImages);
         getNextFrame(false);
     }
-    public AnimalStatBox getAnimalStatBox(){
+
+    public AnimalStatBox getAnimalStatBox() {
         return this.animalStatBox;
     }
+
     public void getNextFrame(boolean highlight) {
         this.grid.getChildren().clear();
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                Parent parent = getElementViewAt(i, height - j - 1,highlight);
+                Parent parent = getElementViewAt(i, height - j - 1, highlight);
                 if (parent != null) {
                     grid.add(parent, i, j);
-                    grid.setHalignment(parent, HPos.CENTER);
+                    GridPane.setHalignment(parent, HPos.CENTER);
                 }
             }
         }
@@ -110,7 +108,7 @@ public class MapRenderer {
         this.mapStatBox.updateHeight((Double) newValue);
     }
 
-    public Parent getElementViewAt(int column, int row,boolean highlight) {
+    public Parent getElementViewAt(int column, int row, boolean highlight) {
         IMapElement mapElement = map.topObjectAt(new Vector2D(column, row));
         if (mapElement == null) {
             FlowPane field = new FlowPane();
@@ -128,9 +126,7 @@ public class MapRenderer {
             Animal animal = (Animal) mapElement;
 
             AnimalView view = new AnimalView(animal, animalImages);
-            view.vBox.addEventHandler(MouseEvent.MOUSE_CLICKED,event -> {
-                System.out.println("klik");
-                System.out.println(animal);
+            view.vBox.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 animal.toggleSelection();
                 this.animalStatBox.updateStats();
             });
@@ -139,22 +135,24 @@ public class MapRenderer {
             } else {
                 view.vBox.getStyleClass().add("steppe-field");
             }
-            if(highlight){
-                if(Arrays.equals(animal.getGenes().getGenotype(),highlightedGenotype)){
+            if (highlight) {
+                if (Arrays.equals(animal.getGenes().getGenotype(), highlightedGenotype)) {
                     view.vBox.getStyleClass().add("highlighted-field");
                 }
             }
             return view.vBox;
         }
-
     }
-    public List<String[]> getSimulationData(){
+
+    public List<String[]> getSimulationData() {
         return this.mapStatBox.getSimulationData();
     }
-    public void highlightGenotype(){
-        this.highlightedGenotype=map.getDominantGenotype();
+
+    public void highlightGenotype() {
+        this.highlightedGenotype = map.getDominantGenotype();
         getNextFrame(true);
     }
+
     public VBox getCurrentView() {
         return this.vBox;
     }

@@ -1,10 +1,10 @@
 package classes;
 
-import enums.*;
+import enums.MapDirection;
+import enums.MoveDirection;
 import evo.GenericWorldMap;
-import interfaces.*;
-import javafx.scene.Parent;
-import javafx.scene.layout.VBox;
+import interfaces.IMapElement;
+import interfaces.IPositionObserver;
 
 import java.util.ArrayList;
 
@@ -34,7 +34,7 @@ public class Animal implements IMapElement {
         this.map = map;
         this.energy = initialEnergy;
         this.orient = MapDirection.values()[(int) Math.floor(Math.random() * 8)];
-        this.addObserver((IPositionObserver) map);
+        this.addObserver(map);
         this.genes = new Genes(32, 8);
         this.dailyEnergyCost = dailyEnergyCost;
     }
@@ -44,7 +44,7 @@ public class Animal implements IMapElement {
         this.map = clone.map;
         this.energy = initialEnergy;
         this.orient = clone.orient;
-        this.addObserver((IPositionObserver) map);
+        this.addObserver(map);
         this.genes = clone.genes;
         this.dailyEnergyCost = clone.dailyEnergyCost;
     }
@@ -55,7 +55,7 @@ public class Animal implements IMapElement {
         this.energy = initialEnergy;
         this.dailyEnergyCost = dailyEnergyCost;
         this.orient = MapDirection.values()[(int) Math.floor(Math.random() * 8)];
-        this.addObserver((IPositionObserver) map);
+        this.addObserver(map);
         if (parent1.energy > parent2.energy) {
             this.genes = new Genes(parent1.getGenes(), parent2.getGenes(), (float) parent1.energy / (parent2.energy + parent1.energy));
         } else {
@@ -75,16 +75,6 @@ public class Animal implements IMapElement {
             this.orient = this.orient.rotate(move);
             this.decreaseEnergy(dailyEnergyCost);
         }
-    }
-
-    public void startTracking() {
-        this.isTracked = true;
-    }
-
-    public void stopTracking() {
-        this.isTracked = false;
-        trackedChildrenCount = 0;
-        trackedDescendantCount = 0;
     }
 
     public void move(MoveDirection direction) {
@@ -129,16 +119,16 @@ public class Animal implements IMapElement {
             observer.positionChanged(oldPos, newPos, this);
         }
     }
-    public void toggleSelection(){
-        if(this.isTracked){
+
+    public void toggleSelection() {
+        if (this.isTracked) {
             this.map.setTrackedAnimal(null);
-            this.isTracked=false;
-        }
-        else{
-            if(this.map.getTrackedAnimal()!=null){
+            this.isTracked = false;
+        } else {
+            if (this.map.getTrackedAnimal() != null) {
                 this.map.getTrackedAnimal().toggleSelection();
             }
-            this.isTracked=true;
+            this.isTracked = true;
             this.map.setTrackedAnimal(this);
         }
     }
@@ -177,10 +167,6 @@ public class Animal implements IMapElement {
 
     public void increaseChildrenCount() {
         this.childrenCount += 1;
-    }
-
-    void removeObserver(IPositionObserver observer) {
-        this.observers.remove(observer);
     }
 
     public int getLifespan() {

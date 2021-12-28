@@ -2,13 +2,8 @@ package evo;
 
 import classes.Vector2D;
 import enums.MapType;
-import interfaces.IMapElement;
 import interfaces.IPositionObserver;
 import interfaces.IWorldMap;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class BoundedWorldMap extends GenericWorldMap implements IWorldMap, IPositionObserver {
 

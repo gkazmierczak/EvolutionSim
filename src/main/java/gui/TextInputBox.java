@@ -8,15 +8,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 
 public class TextInputBox extends Parent {
-    private HBox content= new HBox();
-    private Label label;
-    private TextField textField;
+    private final HBox content= new HBox();
+    private final TextField textField;
     public TextInputBox(String text, String defaultValue){
         content.setPrefSize(640,24);
         textField=new TextField(defaultValue);
-        label=new Label(text);
+        Label label = new Label(text);
         label.setFont(Font.font(14));
-        textField.setFont(Font.font(14));;
+        textField.setFont(Font.font(14));
         content.getChildren().add(label);
         content.getChildren().add(textField);
         content.setSpacing(80);

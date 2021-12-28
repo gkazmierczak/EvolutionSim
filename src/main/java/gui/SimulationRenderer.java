@@ -7,7 +7,6 @@ import evo.SimulationEngine;
 import interfaces.IButtonPressHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -16,16 +15,13 @@ import javafx.stage.Stage;
 public class SimulationRenderer {
     private MapRenderer loopedMapRenderer;
     private MapRenderer boundedMapRenderer;
-    private LoopedWorldMap loopedWorldMap;
-    private BoundedWorldMap boundedWorldMap;
+    private final LoopedWorldMap loopedWorldMap;
+    private final BoundedWorldMap boundedWorldMap;
     private OutputLog outputLog;
-    private Stage primaryStage;
-    private HBox mainBox;
+    private final Stage primaryStage;
     private Button saveBtn;
     private Button highlightBtn;
-//    private VBox middleVBox;
-    private VBox middleBox;
-    private IButtonPressHandler handler;
+    private final IButtonPressHandler handler;
     public SimulationRenderer(Stage primaryStage, LoopedWorldMap loopedWorldMap, BoundedWorldMap boundedWorldMap, IButtonPressHandler handler){
         this.primaryStage=primaryStage;
         this.loopedWorldMap=loopedWorldMap;
@@ -39,25 +35,21 @@ public class SimulationRenderer {
         loopedMapRenderer.init();
         this.boundedMapRenderer=new MapRenderer(boundedWorldMap,handler);
         boundedMapRenderer.init();
-        this.mainBox=new HBox();
-        this.mainBox.getChildren().add(loopedMapRenderer.getCurrentView());
-        middleBox=new VBox();
+        HBox mainBox = new HBox();
+        mainBox.getChildren().add(loopedMapRenderer.getCurrentView());
+        VBox middleBox = new VBox();
         outputLog=new OutputLog();
         highlightBtn=new Button("Highlight");
-        highlightBtn.setOnAction((event)->{
-            handler.handleButtonPress(highlightBtn,"HIGHLIGHT");
-        });
+        highlightBtn.setOnAction((event)-> handler.handleButtonPress(highlightBtn,"HIGHLIGHT"));
         saveBtn=new Button("Save CSV");
-        saveBtn.setOnAction((event)->{
-            handler.handleButtonPress(saveBtn,"SAVE");
-        });
-        this.middleBox.getChildren().add(loopedMapRenderer.getAnimalStatBox().vBox);
-        this.middleBox.getChildren().add(highlightBtn);
-        this.middleBox.getChildren().add(saveBtn);
-        this.middleBox.getChildren().add(boundedMapRenderer.getAnimalStatBox().vBox);
+        saveBtn.setOnAction((event)-> handler.handleButtonPress(saveBtn,"SAVE"));
+        middleBox.getChildren().add(loopedMapRenderer.getAnimalStatBox().vBox);
+        middleBox.getChildren().add(highlightBtn);
+        middleBox.getChildren().add(saveBtn);
+        middleBox.getChildren().add(boundedMapRenderer.getAnimalStatBox().vBox);
         middleBox.getChildren().add(outputLog.textArea);
-        this.mainBox.getChildren().add(middleBox);
-        this.mainBox.getChildren().add(boundedMapRenderer.getCurrentView());
+        mainBox.getChildren().add(middleBox);
+        mainBox.getChildren().add(boundedMapRenderer.getCurrentView());
         this.primaryStage.getScene().setRoot(mainBox);
         this.primaryStage.getScene().getStylesheets().add("stylesheet.css");
         this.primaryStage.setMinWidth(1280);
@@ -82,10 +74,6 @@ public class SimulationRenderer {
             this.boundedMapRenderer.updateHeight(newValue);
         });
 
-    }
-    public void getNextFrame(){
-        this.loopedMapRenderer.getNextFrame(false);
-        this.boundedMapRenderer.getNextFrame(false);
     }
     public void highlightGenotype(MapType mapType){
         if(mapType==MapType.LOOPED){

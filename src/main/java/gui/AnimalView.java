@@ -10,11 +10,11 @@ import javafx.scene.layout.VBox;
 public class AnimalView extends Parent {
     public VBox vBox = new VBox();
 
-    public AnimalView(Animal animal, Image[] images) {
+    public AnimalView(Animal animal, Image[] images,double width,double height) {
         Image image = images[animal.orient.ordinal()];
         ImageView imageView = new ImageView(image);
-        imageView.setFitWidth(24);
-        imageView.setFitHeight(24);
+        imageView.setFitWidth(width);
+        imageView.setFitHeight(height);
         vBox.getChildren().add(imageView);
         vBox.setAlignment(Pos.CENTER);
     }

@@ -14,18 +14,18 @@ import javafx.scene.paint.Color;
 public class GrassView extends Parent {
 
     VBox vBox=new VBox();
-    public GrassView(Image image,boolean inJungle){
+    public GrassView(Image image,boolean inJungle,double width,double height){
         if(image!=null){
             ImageView imageView = new ImageView(image);
-            imageView.setFitWidth(24);
-            imageView.setFitHeight(24);
+            imageView.setFitWidth(width);
+            imageView.setFitHeight(height);
             vBox.getChildren().add(imageView);
             vBox.setAlignment(Pos.CENTER);
             if(inJungle){
-                vBox.setBackground(new Background(new BackgroundFill(Color.FORESTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+                vBox.getStyleClass().add("jungle-field");
             }
             else{
-                vBox.setBackground(new Background(new BackgroundFill(Color.OLIVEDRAB, CornerRadii.EMPTY, Insets.EMPTY)));
+                vBox.getStyleClass().add("steppe-field");
             }
         }
         else{

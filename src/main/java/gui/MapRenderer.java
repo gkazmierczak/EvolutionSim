@@ -110,22 +110,23 @@ public class MapRenderer {
 
     public Parent getElementViewAt(int column, int row, boolean highlight) {
         IMapElement mapElement = map.topObjectAt(new Vector2D(column, row));
+        double imageWidth = (this.grid.getWidth()/width) *0.8;
+        double imageHeight = (this.grid.getHeight()/height) *0.8;
         if (mapElement == null) {
             FlowPane field = new FlowPane();
             if (map.inJungle(new Vector2D(column, row))) {
                 field.getStyleClass().add("jungle-field");
             } else {
                 field.getStyleClass().add("steppe-field");
-
             }
             return field;
         } else if (mapElement instanceof Grass) {
-            GrassView grassView = new GrassView(grassImage, map.inJungle(mapElement.getPosition()));
+
+            GrassView grassView = new GrassView(grassImage, map.inJungle(mapElement.getPosition()),imageWidth,imageHeight);
             return grassView.vBox;
         } else {
             Animal animal = (Animal) mapElement;
-
-            AnimalView view = new AnimalView(animal, animalImages);
+            AnimalView view = new AnimalView(animal, animalImages,imageWidth,imageHeight);
             view.vBox.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 animal.toggleSelection();
                 this.animalStatBox.updateStats();
